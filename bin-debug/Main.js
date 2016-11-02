@@ -298,8 +298,8 @@ var Player = (function () {
         this.PlayerBitmap.height = 64;
         // this.PlayerBitmap.anchorOffsetX = 2 * this.PlayerBitmap.width / 3;
         // this.PlayerBitmap.anchorOffsetY = this.PlayerBitmap.height;
-        this.IsIdle = true;
-        this.IsWalking = false;
+        this.ifIdle = true;
+        this.ifWalk = false;
         this.IdleOrWalkStateMachine = new StateMachine();
         this.LeftOrRightStateMachine = new StateMachine();
     }
@@ -308,16 +308,16 @@ var Player = (function () {
         this.PlayerBitmap = picture;
     };
     p.SetIdle = function (set) {
-        this.IsIdle = set;
+        this.ifIdle = set;
     };
     p.GetIfIdle = function () {
-        return this.IsIdle;
+        return this.ifIdle;
     };
     p.SetWalk = function (set) {
-        this.IsWalking = set;
+        this.ifWalk = set;
     };
     p.GetIfWalk = function () {
-        return this.IsWalking;
+        return this.ifWalk;
     };
     p.SetGoRight = function () {
         this.GoRight = true;
