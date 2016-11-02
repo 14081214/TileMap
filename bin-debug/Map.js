@@ -3,9 +3,9 @@ var TileMap = (function (_super) {
     function TileMap() {
         _super.call(this);
         this.size = 2;
-        this.TextruesSize = 64;
-        // this.width = this.size * this.TextruesSize;
-        // this.height = this.size * this.TextruesSize;
+        this.TextrueSize = 64;
+        // this.width = this.size * this.TextrueSize;
+        // this.height = this.size * this.TextrueSize;
         this.tileArray = [];
         this.init();
         this.startTile = this.tileArray[0];
@@ -128,7 +128,7 @@ var TileMap = (function (_super) {
     };
     p.getTile = function (x, y) {
         for (var i = 0; i < this.tileArray.length; i++) {
-            if (this.tileArray[i].x / this.TextruesSize == x && this.tileArray[i].y / this.TextruesSize == y) {
+            if (this.tileArray[i].x / this.TextrueSize == x && this.tileArray[i].y / this.TextrueSize == y) {
                 break;
             }
         }
@@ -136,7 +136,7 @@ var TileMap = (function (_super) {
     };
     p.setStartTile = function (x, y) {
         for (var i = 0; i < this.tileArray.length; i++) {
-            if (this.tileArray[i].x / this.TextruesSize == x && this.tileArray[i].y / this.TextruesSize == y) {
+            if (this.tileArray[i].x / this.TextrueSize == x && this.tileArray[i].y / this.TextrueSize == y) {
                 break;
             }
         }
@@ -144,7 +144,7 @@ var TileMap = (function (_super) {
     };
     p.setEndTile = function (x, y) {
         for (var i = 0; i < this.tileArray.length; i++) {
-            if (this.tileArray[i].x / this.TextruesSize == x && this.tileArray[i].y / this.TextruesSize == y) {
+            if (this.tileArray[i].x / this.TextrueSize == x && this.tileArray[i].y / this.TextrueSize == y) {
                 break;
             }
         }

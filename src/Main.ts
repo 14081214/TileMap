@@ -110,29 +110,25 @@ class Main extends egret.DisplayObjectContainer {
         }
     }
 
-    private textfield:egret.TextField;
-    private EventPoint : egret.Point = new egret.Point();
-    private GoalPoint : egret.Point = new egret.Point();
-    private DistancePoint : egret.Point = new egret.Point();
-    private Stage01Background : egret.Bitmap;
     public player : Player = new Player();
-
-    private map01 : TileMap;
+    private targetPos : egret.Point = new egret.Point();
+    
+    private map : TileMap;
     private astar : AStar;
-    private tileX : number;
-    private tileY : number;
 
-    private ifFindAWay = false;
+    private ifSearchWay = false;
     private ifOnGoal = false;
-    private ifStartMove = false;
+    private ifStartMoving = false;
     private playerx : number;
     private playery : number;
+    private tileX : number;
+    private tileY : number;
     private playerBitX : number;
     private playerBitY : number;
     private MoveTime = 0;
     private movingTime = 32;
     private gridSize = 64;
-    private currentPath = 0;
+    private thePath = 0;
     
     /**
      * 创建游戏场景
@@ -142,16 +138,16 @@ class Main extends egret.DisplayObjectContainer {
         var stageW:number = this.stage.stageWidth;
         var stageH:number = this.stage.stageHeight;
 
-        this.map01 = new TileMap();
-        this.addChild(this.map01);
+        this.map = new TileMap();
+        this.addChild(this.map);
 
          this.addChild(this.player.PlayerBitmap);
          this.player.PlayerBitmap.x = 64;            //初始位置
          this.player.PlayerBitmap.y = 0;
 
-         this.map01.startTile = this.map01.getTile(0,0);
-         this.map01.endTile = this.map01.getTile(0,0);
-         //this.map01.setEndTile(2,1);
+         this.map.startTile = this.map.getTile(0,0);
+         this.map.endTile = this.map.getTile(0,0);
+         //this.map.setEndTile(2,1);
 
          this.astar = new AStar();
 
@@ -162,65 +158,34 @@ class Main extends egret.DisplayObjectContainer {
         // Get asynchronously a json configuration file according to name keyword. As for the property of name please refer to the configuration file of resources/resource.json.
         //RES.getResAsync("description_json", this.startAnimation, this)
             this.stage.addEventListener(egret.TouchEvent.TOUCH_BEGIN,(e : egret.TouchEvent)=>{
-            //egret.Tween.removeTweens(this.player.PlayerBitmap);
-            this.ifStartMove = true;
-            //var tempTile : Tile;
-            this.playerx = Math.floor(this.player.PlayerBitmap.x / this.gridSize);
-            this.playery = Math.floor(this.player.PlayerBitmap.y / this.gridSize);
-            this.playerBitX = this.player.PlayerBitmap.x;
-            this.playerBitY = this.player.PlayerBitmap.y;
-            this.map01.startTile = this.map01.getTile(this.playerx,this.playery);
-            this.currentPath = 0;
-            //console.log(playerx + " And " + playery);
-            this.EventPoint.x = e.stageX;
-            this.EventPoint.y = e.stageY;
-            this.tileX = Math.floor(this.EventPoint.x / this.gridSize);
-            this.tileY = Math.floor(this.EventPoint.y / this.gridSize);
-            
-            // if(this.map01.getTile(this.tileX,this.tileY).tileData.walkable)
-            // {
-            //     
-            // }
-            //this.map01.setEndTile(this.tileX,this.tileY);
-            this.map01.endTile = this.map01.getTile(this.tileX,this.tileY);
-            this.ifFindAWay = this.astar.findPath(this.map01);
-            if(this.ifFindAWay){
-                this.player.SetState(new WalkingState(),this);
-                this.currentPath = 0;
-            }
+                this.ifStartMoving = true;
 
-            for(let i = 0 ; i < this.astar.pathArray.length ; i++){
-                console.log(this.astar.pathArray[i].x + " And " + this.astar.pathArray[i].y);
-            }
-            // egret.Ticker.getInstance().register(()=>{
-            // if(!this.IfOnGoal(this.map01.getTile(1,0))){
-            //    this.player.PlayerBitmap.x++;
-            // }
-            // },this)
-            
-            
-            //console.log(this.map01.endTile.x + " And " + this.map01.endTile.y);
-            
-        
-            // while(this.player.PlayerBitmap.x != this.GoalPoint.x || this.player.PlayerBitmap.y != this.GoalPoint.y){
-            //     egret.Ticker.getInstance().register(()=>{
-            //        this.player.PlayerBitmap.x += 1;
-            //         this.player.PlayerBitmap.y += 1;
-            //     },this)
-            // }
-            // this.PictureMove(this.Stage01Background);
+                this.playerx = Math.floor(this.player.PlayerBitmap.x / this.gridSize);
+                this.playery = Math.floor(this.player.PlayerBitmap.y / this.gridSize);
+                this.playerBitX = this.player.PlayerBitmap.x;
+                this.playerBitY = this.player.PlayerBitmap.y;
+                this.map.startTile = this.map.getTile(this.playerx,this.playery);
+                this.thePath = 0;
 
-            if(this.ifFindAWay)
-            this.map01.startTile = this.map01.endTile;
-        },this)
-        
+                this.targetPos.x = e.stageX;
+                this.targetPos.y = e.stageY;
+                this.tileX = Math.floor(this.targetPos.x / this.gridSize);
+                this.tileY = Math.floor(this.targetPos.y / this.gridSize);
+
+                this.map.endTile = this.map.getTile(this.tileX,this.tileY);
+                this.ifSearchWay = this.astar.findPath(this.map);
+                if(this.ifSearchWay){
+                    this.player.SetState(new WalkingState(),this);
+                    this.thePath = 0;
+                }
+
+                if(this.ifSearchWay)
+                this.map.startTile = this.map.endTile;
+            },this)
+      
             this.onMove();
-        
-        
             this.PlayerAnimation();
-            
-        
-            
+         
     }
 
     /**
@@ -239,10 +204,10 @@ class Main extends egret.DisplayObjectContainer {
        var self:any = this;
        
        egret.Ticker.getInstance().register(()=>{
-    if(this.ifStartMove && self.ifFindAWay){
-       if(self.currentPath < self.astar.pathArray.length - 1){ 
-            var distanceX = self.astar.pathArray[self.currentPath + 1].x - self.astar.pathArray[self.currentPath].x;
-            var distanceY = self.astar.pathArray[self.currentPath + 1].y - self.astar.pathArray[self.currentPath].y;
+    if(this.ifStartMoving && self.ifSearchWay){
+       if(self.thePath < self.astar.pathArray.length - 1){ 
+            var distanceX = self.astar.pathArray[self.thePath + 1].x - self.astar.pathArray[self.thePath].x;
+            var distanceY = self.astar.pathArray[self.thePath + 1].y - self.astar.pathArray[self.thePath].y;
             //console.log(distanceX + "And" + distanceY);
 
             if(distanceX > 0){
@@ -251,25 +216,25 @@ class Main extends egret.DisplayObjectContainer {
             if(distanceX <= 0){
             self.player.SetRightOrLeftState(new GoLeftState(),self);
             }
-            if(!self.IfOnGoal(self.astar.pathArray[self.currentPath + 1])){
+            if(!self.IfOnGoal(self.astar.pathArray[self.thePath + 1])){
                self.player.PlayerBitmap.x += distanceX / self.movingTime;
                self.player.PlayerBitmap.y += distanceY / self.movingTime;
             }
             else{
-               self.currentPath += 1;
+               self.thePath += 1;
             }
           }
     }
-    if(this.ifStartMove && !self.ifFindAWay){
-        var distanceX = self.map01.startTile.x - self.playerBitX;
-        var distanceY = self.map01.startTile.y - self.playerBitY;
+    if(this.ifStartMoving && !self.ifSearchWay){
+        var distanceX = self.map.startTile.x - self.playerBitX;
+        var distanceY = self.map.startTile.y - self.playerBitY;
         if(distanceX > 0){
             self.player.SetRightOrLeftState(new GoRightState(),self);
             }
             if(distanceX <= 0){
             self.player.SetRightOrLeftState(new GoLeftState(),self);
             }
-        if(!self.IfOnGoal(self.map01.startTile)){
+        if(!self.IfOnGoal(self.map.startTile)){
                self.player.PlayerBitmap.x += distanceX / self.movingTime;
                self.player.PlayerBitmap.y += distanceY / self.movingTime;
             }
@@ -286,7 +251,7 @@ class Main extends egret.DisplayObjectContainer {
         var self:any = this;
         var MapMove:Function = function (){
             egret.Tween.removeTweens(pic);
-            var dis = self.player.PlayerBitmap.x - self.EventPoint.x;
+            var dis = self.player.PlayerBitmap.x - self.targetPos.x;
         if(self.player.GetIfGoRight() && pic.x >= - (pic.width - self.stage.stageWidth) ){
             egret.Tween.get(pic).to({x : pic.x - Math.abs(dis)},self.MoveTime);
         }
@@ -313,13 +278,11 @@ class Main extends egret.DisplayObjectContainer {
     public PlayerAnimation():void{
         var self:any = this;
         var n = 0;
-        var GOR = 0;
-        var GOL = 0;
+        var goIdle = 0;
+        var goWalk = 0;
         var zhen = 0;
-        var zhen2 = 0;
-        var zhen3 = 0;
-        var standArr = ["1","2","3","4"];
-        var walkRightArr = ["1","2","3","4"];
+        var standArr = ["jz1_png","jz2_png","jz3_png","jz4_png"];
+        var walkArr = ["tq1_png","tq2_png","tq3_png","tq4_png"];
 
         var MoveAnimation:Function = function (){
             //var playerBitmap = egret.Tween.get(self.player.PlayerBitmap);
@@ -327,50 +290,44 @@ class Main extends egret.DisplayObjectContainer {
                 
                 egret.Ticker.getInstance().register(()=>{
                 if(zhen % 4 == 0){
-                    
                     if(self.player.GetIfIdle() && !self.player.GetIfWalk()){
-                    GOR = 0;
-                    GOL = 0;
-                    var textureName = "jz" + standArr[n] + "_png";
-                    var texture : egret.Texture = RES.getRes(textureName);
-                    self.player.PlayerBitmap.texture = texture;
-                    n++;
-                    if(n >= standArr.length){
+                        goIdle = 0;
+                        goWalk = 0;
+                        //var textureName = standArr[n];
+                        var texture : egret.Texture = RES.getRes(standArr[n]);
+                        self.player.PlayerBitmap.texture = texture;
+                        n++;
+                        if(n >= standArr.length){
                           n=0;
-                          }
-                          }
-                          
-
-
+                        }
+                    }
 
                     if(self.player.GetIfWalk() && self.player.GetIfGoRight() && !self.player.GetIfIdle()){
                         n = 0;
-                        GOL = 0;
-                    var textureName = "tq" + walkRightArr[GOR] + "_png";
+                        goIdle = 0;
+                    var textureName = walkArr[goWalk];
                     var texture : egret.Texture = RES.getRes(textureName);
                     self.player.PlayerBitmap.texture = texture;
-                    GOR++;
-                    if(GOR >= walkRightArr.length){
-                          GOR=0;
-                          }
-                          }
-
-                          if(self.player.GetIfWalk() && self.player.GetIfGoLeft() && !self.player.GetIfIdle()){
-                              n = 0;
-                              GOR = 0;
-                    var textureName = "tq" + walkRightArr[GOL] + "_png";
+                    self.player.PlayerBitmap.scaleX = -1;
+                    goWalk++;
+                    if(goWalk >= walkArr.length){
+                          goWalk=0;
+                        }
+                    }
+                    if(self.player.GetIfWalk() && self.player.GetIfGoLeft() && !self.player.GetIfIdle()){
+                        n = 0;
+                        goWalk = 0;
+                    var textureName = walkArr[goIdle];
                     var texture : egret.Texture = RES.getRes(textureName);
                     self.player.PlayerBitmap.texture = texture;
-                    GOL++;
-                    if(GOL >= walkRightArr.length){
-                          GOL=0;
-                          }
+                    self.player.PlayerBitmap.scaleX = 1;
+                    goIdle++;
+                    if(goIdle >= walkArr.length){
+                          goIdle=0;
+                        }
                     }
-
-                    }
-
-
-                    if(self.IfOnGoal(self.map01.endTile)){
+                }
+                    if(self.IfOnGoal(self.map.endTile)){
                      self.player.SetState(new IdleState(),self);
                     }
                 },self);

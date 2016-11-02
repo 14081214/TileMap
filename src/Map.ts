@@ -1,7 +1,7 @@
 class TileMap extends egret.DisplayObjectContainer{
 
     private size = 2;
-    private TextruesSize = 64;
+    private TextrueSize = 64;
     public startTile : Tile;
     public endTile : Tile;
     public numCols:number;
@@ -11,8 +11,8 @@ class TileMap extends egret.DisplayObjectContainer{
 
     constructor(){
         super();
-        // this.width = this.size * this.TextruesSize;
-        // this.height = this.size * this.TextruesSize;
+        // this.width = this.size * this.TextrueSize;
+        // this.height = this.size * this.TextrueSize;
         this.tileArray = [];
         this.init();
         this.startTile = this.tileArray[0];
@@ -237,7 +237,7 @@ class TileMap extends egret.DisplayObjectContainer{
 
     public getTile( x : number , y : number):any{
         for(var i = 0 ; i<this.tileArray.length ; i++){
-              if(this.tileArray[i].x / this.TextruesSize == x && this.tileArray[i].y / this.TextruesSize == y){
+              if(this.tileArray[i].x / this.TextrueSize == x && this.tileArray[i].y / this.TextrueSize == y){
                   break;
               }
         }
@@ -247,7 +247,7 @@ class TileMap extends egret.DisplayObjectContainer{
 
     public setStartTile( x : number , y : number){
         for(var i = 0 ; i<this.tileArray.length ; i++){
-              if(this.tileArray[i].x / this.TextruesSize == x && this.tileArray[i].y / this.TextruesSize== y){
+              if(this.tileArray[i].x / this.TextrueSize == x && this.tileArray[i].y / this.TextrueSize== y){
                   break;
               }
         }
@@ -257,7 +257,7 @@ class TileMap extends egret.DisplayObjectContainer{
 
     public setEndTile( x : number , y : number){
         for(var i = 0 ; i<this.tileArray.length ; i++){
-              if(this.tileArray[i].x / this.TextruesSize == x && this.tileArray[i].y / this.TextruesSize == y){
+              if(this.tileArray[i].x / this.TextrueSize == x && this.tileArray[i].y / this.TextrueSize == y){
                   break;
               }
         }
