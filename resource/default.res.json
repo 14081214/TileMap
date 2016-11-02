@@ -1,7 +1,7 @@
 {
 	"groups": [
 		{
-			"keys": "bg_jpg,egret_icon_png,description_json,grass_01_jpg,wall_01_jpg,tq1_png,tq2_png,tq3_png,tq4_png,jz2_png,jz3_png,jz4_png,jz1_png",
+			"keys": "bg_jpg,egret_icon_png,description_json,grass_01_jpg,wall_01_jpg,tq1_png,tq2_png,tq3_png,tq4_png,jz2_png,jz3_png,jz4_png,jz1_png,mush_jpg",
 			"name": "preload"
 		}
 	],
@@ -70,6 +70,11 @@
 			"name": "jz1_png",
 			"type": "image",
 			"url": "assets/jz1.png"
+		},
+		{
+			"name": "mush_jpg",
+			"type": "image",
+			"url": "assets/mush.jpg"
 		}
 	]
 }
