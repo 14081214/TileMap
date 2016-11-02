@@ -204,37 +204,37 @@ class Main extends egret.DisplayObjectContainer {
        var self:any = this;
        
        egret.Ticker.getInstance().register(()=>{
-    if(this.ifStartMoving && self.ifSearchWay){
-       if(self.thePath < self.astar.pathArray.length - 1){ 
-            var distanceX = self.astar.pathArray[self.thePath + 1].x - self.astar.pathArray[self.thePath].x;
-            var distanceY = self.astar.pathArray[self.thePath + 1].y - self.astar.pathArray[self.thePath].y;
-            //console.log(distanceX + "And" + distanceY);
-
+           if(this.ifStartMoving && self.ifSearchWay){
+               if(self.thePath < self.astar.pathArray.length - 1){ 
+                   var distanceX = self.astar.pathArray[self.thePath + 1].x - self.astar.pathArray[self.thePath].x;
+                   var distanceY = self.astar.pathArray[self.thePath + 1].y - self.astar.pathArray[self.thePath].y;
+                   if(distanceX > 0){
+                       self.player.SetRightOrLeftState(new GoRightState(),self);
+                    }
+                   if(distanceX <= 0){
+                   self.player.SetRightOrLeftState(new GoLeftState(),self);
+                   }
+                   if(!self.IfOnGoal(self.astar.pathArray[self.thePath + 1])){
+                        self.player.PlayerBitmap.x += distanceX / self.movingTime;
+                        self.player.PlayerBitmap.y += distanceY / self.movingTime;
+                    }
+                    else{
+                        self.thePath += 1;
+                    }
+                }
+            }
+            if(this.ifStartMoving && !self.ifSearchWay){
+                var distanceX = self.map.startTile.x - self.playerBitX;
+                var distanceY = self.map.startTile.y - self.playerBitY;
             if(distanceX > 0){
-            self.player.SetRightOrLeftState(new GoRightState(),self);
+                self.player.SetRightOrLeftState(new GoRightState(),self);
+                //self.player.PlayerBitmap.scaleX = 1;
             }
             if(distanceX <= 0){
-            self.player.SetRightOrLeftState(new GoLeftState(),self);
+                self.player.SetRightOrLeftState(new GoLeftState(),self);
+                //self.player.PlayerBitmap.scaleX = -1;
             }
-            if(!self.IfOnGoal(self.astar.pathArray[self.thePath + 1])){
-               self.player.PlayerBitmap.x += distanceX / self.movingTime;
-               self.player.PlayerBitmap.y += distanceY / self.movingTime;
-            }
-            else{
-               self.thePath += 1;
-            }
-          }
-    }
-    if(this.ifStartMoving && !self.ifSearchWay){
-        var distanceX = self.map.startTile.x - self.playerBitX;
-        var distanceY = self.map.startTile.y - self.playerBitY;
-        if(distanceX > 0){
-            self.player.SetRightOrLeftState(new GoRightState(),self);
-            }
-            if(distanceX <= 0){
-            self.player.SetRightOrLeftState(new GoLeftState(),self);
-            }
-        if(!self.IfOnGoal(self.map.startTile)){
+            if(!self.IfOnGoal(self.map.startTile)){
                self.player.PlayerBitmap.x += distanceX / self.movingTime;
                self.player.PlayerBitmap.y += distanceY / self.movingTime;
             }
@@ -245,9 +245,7 @@ class Main extends egret.DisplayObjectContainer {
       
    }
 
-
-
-    public PictureMove(pic : egret.Bitmap):void{
+   /* public playerMove(pic : egret.Bitmap):void{
         var self:any = this;
         var MapMove:Function = function (){
             egret.Tween.removeTweens(pic);
@@ -261,8 +259,7 @@ class Main extends egret.DisplayObjectContainer {
         }
         }
         MapMove();
-    }
-
+    }*/
 
     public IfOnGoal(tile : Tile) : any{
         var self:any = this;
@@ -280,7 +277,7 @@ class Main extends egret.DisplayObjectContainer {
         var n = 0;
         var goIdle = 0;
         var goWalk = 0;
-        var zhen = 0;
+        var frame = 0;
         var standArr = ["jz1_png","jz2_png","jz3_png","jz4_png"];
         var walkArr = ["tq1_png","tq2_png","tq3_png","tq4_png"];
 
@@ -289,7 +286,7 @@ class Main extends egret.DisplayObjectContainer {
                
                 
                 egret.Ticker.getInstance().register(()=>{
-                if(zhen % 4 == 0){
+                if(frame % 4 == 0){
                     if(self.player.GetIfIdle() && !self.player.GetIfWalk()){
                         goIdle = 0;
                         goWalk = 0;
@@ -320,7 +317,7 @@ class Main extends egret.DisplayObjectContainer {
                     var textureName = walkArr[goIdle];
                     var texture : egret.Texture = RES.getRes(textureName);
                     self.player.PlayerBitmap.texture = texture;
-                    self.player.PlayerBitmap.scaleX = 1;
+                    //self.player.PlayerBitmap.scaleX = 1;
                     goIdle++;
                     if(goIdle >= walkArr.length){
                           goIdle=0;
@@ -335,13 +332,13 @@ class Main extends egret.DisplayObjectContainer {
 
         var FramePlus : Function = function(){
             egret.Ticker.getInstance().register(()=>{
-            zhen++;
-            if(zhen == 400)
-            zhen = 0;
+                frame++;
+                if(frame == 400)
+                frame = 0;
             },self)
         }
         MoveAnimation();
-        
+
         FramePlus();
     }
 
@@ -356,13 +353,17 @@ class Player{
     private GoLeft : boolean = false;
     private IdleOrWalkStateMachine : StateMachine;
     private LeftOrRightStateMachine : StateMachine;
+    public MyPhoto:egret.Bitmap;
 
     constructor(){
+        this.MyPhoto=this.createBitmapByName("jz1_png");
         this.PlayerBitmap = new egret.Bitmap();
-        this.PlayerBitmap.width = 49;
+        this.PlayerBitmap.width = 64;
         this.PlayerBitmap.height = 64;
-        // this.PlayerBitmap.anchorOffsetX = 2 * this.PlayerBitmap.width / 3;
-        // this.PlayerBitmap.anchorOffsetY = this.PlayerBitmap.height;
+
+        this.PlayerBitmap.anchorOffsetX=this.MyPhoto.width/2;    //锚点
+        this.PlayerBitmap.anchorOffsetY=this.MyPhoto.height/2;
+
         this.ifIdle = true;
         this.ifWalk = false;
         this.IdleOrWalkStateMachine = new StateMachine();

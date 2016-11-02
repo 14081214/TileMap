@@ -167,7 +167,6 @@ var Main = (function (_super) {
                 if (self.thePath < self.astar.pathArray.length - 1) {
                     var distanceX = self.astar.pathArray[self.thePath + 1].x - self.astar.pathArray[self.thePath].x;
                     var distanceY = self.astar.pathArray[self.thePath + 1].y - self.astar.pathArray[self.thePath].y;
-                    //console.log(distanceX + "And" + distanceY);
                     if (distanceX > 0) {
                         self.player.SetRightOrLeftState(new GoRightState(), self);
                     }
@@ -201,20 +200,21 @@ var Main = (function (_super) {
             }
         }, self);
     };
-    p.PictureMove = function (pic) {
-        var self = this;
-        var MapMove = function () {
-            egret.Tween.removeTweens(pic);
-            var dis = self.player.PlayerBitmap.x - self.targetPos.x;
-            if (self.player.GetIfGoRight() && pic.x >= -(pic.width - self.stage.stageWidth)) {
-                egret.Tween.get(pic).to({ x: pic.x - Math.abs(dis) }, self.MoveTime);
-            }
-            if (self.player.GetIfGoLeft() && pic.x <= 0) {
-                egret.Tween.get(pic).to({ x: pic.x + Math.abs(dis) }, self.MoveTime);
-            }
-        };
-        MapMove();
-    };
+    /* public playerMove(pic : egret.Bitmap):void{
+         var self:any = this;
+         var MapMove:Function = function (){
+             egret.Tween.removeTweens(pic);
+             var dis = self.player.PlayerBitmap.x - self.targetPos.x;
+         if(self.player.GetIfGoRight() && pic.x >= - (pic.width - self.stage.stageWidth) ){
+             egret.Tween.get(pic).to({x : pic.x - Math.abs(dis)},self.MoveTime);
+         }
+ 
+         if(self.player.GetIfGoLeft() && pic.x <= 0){
+             egret.Tween.get(pic).to({x : pic.x + Math.abs(dis)},self.MoveTime);
+         }
+         }
+         MapMove();
+     }*/
     p.IfOnGoal = function (tile) {
         var self = this;
         if (self.player.PlayerBitmap.x == tile.x && self.player.PlayerBitmap.y == tile.y)
@@ -228,13 +228,13 @@ var Main = (function (_super) {
         var n = 0;
         var goIdle = 0;
         var goWalk = 0;
-        var zhen = 0;
+        var frame = 0;
         var standArr = ["jz1_png", "jz2_png", "jz3_png", "jz4_png"];
         var walkArr = ["tq1_png", "tq2_png", "tq3_png", "tq4_png"];
         var MoveAnimation = function () {
             //var playerBitmap = egret.Tween.get(self.player.PlayerBitmap);
             egret.Ticker.getInstance().register(function () {
-                if (zhen % 4 == 0) {
+                if (frame % 4 == 0) {
                     if (self.player.GetIfIdle() && !self.player.GetIfWalk()) {
                         goIdle = 0;
                         goWalk = 0;
@@ -264,7 +264,7 @@ var Main = (function (_super) {
                         var textureName = walkArr[goIdle];
                         var texture = RES.getRes(textureName);
                         self.player.PlayerBitmap.texture = texture;
-                        self.player.PlayerBitmap.scaleX = 1;
+                        //self.player.PlayerBitmap.scaleX = 1;
                         goIdle++;
                         if (goIdle >= walkArr.length) {
                             goIdle = 0;
@@ -278,9 +278,9 @@ var Main = (function (_super) {
         };
         var FramePlus = function () {
             egret.Ticker.getInstance().register(function () {
-                zhen++;
-                if (zhen == 400)
-                    zhen = 0;
+                frame++;
+                if (frame == 400)
+                    frame = 0;
             }, self);
         };
         MoveAnimation();
@@ -293,11 +293,12 @@ var Player = (function () {
     function Player() {
         this.GoRight = false;
         this.GoLeft = false;
+        this.MyPhoto = this.createBitmapByName("jz1_png");
         this.PlayerBitmap = new egret.Bitmap();
-        this.PlayerBitmap.width = 49;
+        this.PlayerBitmap.width = 64;
         this.PlayerBitmap.height = 64;
-        // this.PlayerBitmap.anchorOffsetX = 2 * this.PlayerBitmap.width / 3;
-        // this.PlayerBitmap.anchorOffsetY = this.PlayerBitmap.height;
+        this.PlayerBitmap.anchorOffsetX = this.MyPhoto.width / 2; //锚点
+        this.PlayerBitmap.anchorOffsetY = this.MyPhoto.height / 2;
         this.ifIdle = true;
         this.ifWalk = false;
         this.IdleOrWalkStateMachine = new StateMachine();
